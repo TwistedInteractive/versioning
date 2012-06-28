@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension id="versions" status="experimental" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+<extension id="versioning" status="experimental" xmlns="http://symphony-cms.com/schemas/extension/1.0">
 	<name>Versioning</name>
 	<description>Entry Versioning and Recycling</description>
 	<repo type="github">https://github.com/iwyg/versioning/</repo>
