@@ -208,7 +208,47 @@ class ContentExtensionVersioningVersion extends AdministrationPage
         $this->appendSubheading($display_name, $this->buildToPreviousViewButton());
         $this->appendVersionsDrawer();
 
-    }
+		// Support for tabs extension:
+		if(!is_null(ExtensionManager::fetchInstalledVersion('publish_tabs')))
+		{
+			// Copied straigh from the publish tabs extension :-\
+			$page = Administration::instance()->Page;
+			$page->addStylesheetToHead(URL . '/extensions/publish_tabs/assets/publish_tabs.publish.css', 'screen', 9001);
+			$page->addScriptToHead(URL . '/extensions/publish_tabs/assets/publish_tabs.publish.js', 9002);
+			$callback = Administration::instance()->getPageCallback();
+
+			include_once(TOOLKIT . '/class.sectionmanager.php');
+
+			$section_id = $this->_entry->get('section_id');
+			$section = SectionManager::fetch($section_id);
+
+			if( !$section instanceof Section ) return;
+
+			$tabs = array();
+			$current_tab = '';
+			$index = -1;
+
+			foreach($section->fetchFieldsSchema() as $i => $field) {
+				if ($i == 0 && $field['type'] != 'publish_tabs'){
+					$current_tab = 'untitled-tab';
+					$tabs[++$index]['tab_id'] = $current_tab;
+				}
+				if ($field['type'] == 'publish_tabs') {
+					$current_tab = $field['id'];
+					$tabs[++$index]['tab_id'] = $current_tab;
+				} else {
+					$tabs[$index][$field['location']][] = 'field-' . $field['id'];
+				}
+			}
+
+			$page->addElementToHead(new XMLElement(
+				'script',
+				"Symphony.Context.add('publish-tabs', " . json_encode($tabs) . ")",
+				array('type' => 'text/javascript')
+			), 9003);
+		}
+
+	}
 
     /**
      * __actionDelete
