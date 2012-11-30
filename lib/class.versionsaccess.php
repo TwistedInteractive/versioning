@@ -40,6 +40,25 @@ class VersionsAccess extends Cacheable
         $unstate = "UPDATE `tbl_versions` SET `verstate` = '0' WHERE `entry_id` = {$entry_id} AND `verstate` = '1'";
 
         if ($deleted) {
+			// Store a backup of uploaded files, so they are restored when this entry is restored:
+			// Supported fields are upload field and unique upload field.
+			$data = $entry->getData();
+			foreach($data as $id_field => $valueArr)
+			{
+				$type = FieldManager::fetchFieldTypeFromID($id_field);
+				if($type == 'upload' || $type == 'uniqueupload')
+				{
+					// Copy the file:
+					$fullpath = WORKSPACE.$valueArr['file'];
+					$filename = basename($fullpath);
+					$copypath = str_replace($filename, '__recycle__'.$filename, $fullpath);
+					if(!file_exists($copypath)) {
+						copy($fullpath, $copypath);
+					}
+				}
+			}
+
+			// Update version to deleted:
             $this->Database->query($unstate);
             return $this->Database->query("UPDATE `tbl_versions` SET `deleted` = '1' WHERE `entry_id` = {$entry_id}");
         }
@@ -107,6 +126,19 @@ class VersionsAccess extends Cacheable
             $dataTable = "`tbl_entries_data_{$field_id}`";
             $leftJoin[] = "LEFT JOIN {$dataTable} ON (`tbl_entries`.id = {$dataTable}.entry_id)";
             $set[] = "{$dataTable}.entry_id = {$oldId}";
+
+			// Restore file upload-fields:
+			$type = FieldManager::fetchFieldTypeFromID($field_id);
+			if($type == 'upload' || $type == 'uniqueupload')
+			{
+				// Copy the file:
+				$fullpath = WORKSPACE.$f['file'];
+				$filename = basename($fullpath);
+				$copypath = str_replace($filename, '__recycle__'.$filename, $fullpath);
+				if(file_exists($copypath) && !file_exists($fullpath)) {
+					rename($copypath, $fullpath);
+				}
+			}
         }
 
         try {

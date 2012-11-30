@@ -42,6 +42,22 @@ class ContentExtensionVersioningRecycler extends ContentExtensionVersioningVersi
         }
 
         if ($this->_state == self::DELETE_STATE_OK) {
+			// Delete recycled file:
+			$data = $this->_entry->getData();
+			foreach($data as $id_field => $valueArr)
+			{
+				$type = FieldManager::fetchFieldTypeFromID($id_field);
+				if($type == 'upload' || $type == 'uniqueupload')
+				{
+					// Copy the file:
+					$fullpath = WORKSPACE.$valueArr['file'];
+					$filename = basename($fullpath);
+					$copypath = str_replace($filename, '__recycle__'.$filename, $fullpath);
+					if(file_exists($copypath)) {
+						unlink($copypath);
+					}
+				}
+			}
             redirect($redirectURL);
         }
         if ($this->_state == self::DELETE_STATE_ERROR) {
@@ -62,6 +78,22 @@ class ContentExtensionVersioningRecycler extends ContentExtensionVersioningVersi
         }
 
         if ($this->_state == self::DELETE_STATE_OK) {
+			// Delete recycled file:
+			$data = $this->_entry->getData();
+			foreach($data as $id_field => $valueArr)
+			{
+				$type = FieldManager::fetchFieldTypeFromID($id_field);
+				if($type == 'upload' || $type == 'uniqueupload')
+				{
+					// Copy the file:
+					$fullpath = WORKSPACE.$valueArr['file'];
+					$filename = basename($fullpath);
+					$copypath = str_replace($filename, '__recycle__'.$filename, $fullpath);
+					if(file_exists($copypath)) {
+						unlink($copypath);
+					}
+				}
+			}
             redirect($redirectURL);
         }
         if ($this->_state == self::DELETE_STATE_ERROR) {
