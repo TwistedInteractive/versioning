@@ -181,13 +181,14 @@ class VersionsAccess extends Cacheable
         $entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s', $version['tstamp']));
         $entry->creationDate = DateTimeObj::get('c', $entry->get('creation_date'));
         $entry->findDefaultData();
-        foreach($version['data'] as $field_id => $value) {
-            if (!is_null($entry->getData($field_id))) {
+
+		foreach($version['data'] as $field_id => $value) {
+            // if (!is_null($entry->getData($field_id))) {
                 $entry->setData($field_id, $value);
-            }
+            // }
         }
 
-        //$entry_id = (!$preview || $fromTrashes)? $entry->get('id') : $version['entry_id'];
+		//$entry_id = (!$preview || $fromTrashes)? $entry->get('id') : $version['entry_id'];
         $entry_id = $version['entry_id'];
         if (!$preview && $fromTrashes) {
             $this->Database->query(
