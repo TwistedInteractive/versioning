@@ -180,9 +180,20 @@ class extension_versioning extends Extension
         if (($callback['driver'] == 'publish' && $callback['context']['page'] != 'index')) {
             $page = $context['oPage'];
 
-            $save_and_createversion = Widget::Input('action[save][createversion]', __('Save And Create New Version'), 'submit', array());
-            $div_action = $this->getChildrenWithClass($page->Form, 'div', 'actions');
-            $div_action->appendChild($save_and_createversion);
+            // $save_and_createversion = Widget::Input('action[save][createversion]', __('Save as New Version'), 'submit', array());
+            // $div_action->appendChild($save_and_createversion);
+
+			$div_action = $this->getChildrenWithClass($page->Form, 'div', 'actions');
+			/* @var $div_action XMLElement */
+			$children = $div_action->getChildren();
+			foreach($children as &$child)
+			{
+				if($child->getAttribute('name') == 'action[save]')
+				{
+					$child->setAttribute('name', 'action[save][createversion]');
+					$child->setAttribute('value', __('Save as New Version'));
+				}
+			}
         }
 
     }
