@@ -52,7 +52,7 @@ class VersionsAccess extends Cacheable
 					$fullpath = WORKSPACE.$valueArr['file'];
 					$filename = basename($fullpath);
 					$copypath = str_replace($filename, '__recycle__'.$filename, $fullpath);
-					if(!file_exists($copypath)) {
+					if(!file_exists($copypath) && is_file($fullpath)) {
 						copy($fullpath, $copypath);
 					}
 				}
